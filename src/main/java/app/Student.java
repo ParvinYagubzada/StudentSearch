@@ -5,6 +5,7 @@ import util.SearchType;
 import java.security.InvalidParameterException;
 import java.util.regex.Pattern;
 
+import static app.Main.toCapitalize;
 import static app.Printer.*;
 
 public class Student implements Comparable<Student> {
@@ -58,10 +59,9 @@ public class Student implements Comparable<Student> {
 
     public void setName(String name) {
         if (checkName(name)) {
-            this.name = name;
+            this.name = toCapitalize(name);
         } else {
-            throw new InvalidParameterException("Name's first letter has to be Upper case letter and other letters have to be Lower case." +
-                    "\nIt can only have alphabetic characters. Min length is 3 characters.");
+            throw new InvalidParameterException("Name can only have alphabetic characters. Min length is 3 characters.");
         }
     }
 
@@ -71,10 +71,9 @@ public class Student implements Comparable<Student> {
 
     public void setSurname(String surname) {
         if (checkName(surname)) {
-            this.surname = surname;
+            this.surname = toCapitalize(surname);
         } else {
-            throw new InvalidParameterException("Surname's first letter has to be Upper case letter and other letters have to be Lower case." +
-                    "\nIt can only have alphabetic characters. Min length is 3 characters.");
+            throw new InvalidParameterException("Surname can only have alphabetic characters. Min length is 3 characters.");
         }
     }
 
@@ -84,15 +83,14 @@ public class Student implements Comparable<Student> {
 
     public void setFatherName(String fatherName) {
         if (checkName(fatherName)) {
-            this.fatherName = fatherName;
+            this.fatherName = toCapitalize(fatherName);
         } else {
-            throw new InvalidParameterException("Father name's first letter has to be Upper case letter and other letters have to be Lower case." +
-                    "\nIt can only have alphabetic characters. Min length is 3 characters.");
+            throw new InvalidParameterException("Father's name can only have alphabetic characters. Min length is 3 characters.");
         }
     }
 
     public static boolean checkName(String name) {
-        Pattern pattern = Pattern.compile("^\\p{Upper}[a-z]{2,}");
+        Pattern pattern = Pattern.compile("^[a-zA-Z]{2,}");
         return pattern.matcher(name).matches();
     }
 
