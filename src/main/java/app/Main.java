@@ -84,7 +84,8 @@ public class Main {
                     deleteStudent(getId());
                     break;
             }
-        } catch (BackToMenu ignored) {}
+        } catch (BackToMenu ignored) {
+        }
         println(returningMainMenu);
     }
 
@@ -104,7 +105,8 @@ public class Main {
                     search(getString("father name"), Comparator.comparing(Student::getFatherName), SearchType.FATHER);
                     break;
             }
-        } catch (BackToMenu ignored) {}
+        } catch (BackToMenu ignored) {
+        }
         println(returningMainMenu);
     }
 
@@ -177,21 +179,91 @@ public class Main {
     }
 
     private static boolean updateStudent(Student student) {
-        Student newUser = getNewStudentFromUser();
-        if (newUser != null) {
-            copyData(student, newUser);
-            return true;
-        }
-        return false;
+        boolean finished = true;
+        boolean updated = false;
+        do {
+            printMenu(update);
+            int selection = getSelection(5);
+            switch (selection) {
+                case 0, -1:
+                    return updated;
+                case 1:
+                    student.setName(getName("name"));
+                    finished = askFinished();
+                    updated = true;
+                    break;
+                case 2:
+                    student.setSurname(getName("last name"));
+                    finished = askFinished();
+                    updated = true;
+                    break;
+                case 3:
+                    student.setFatherName(getName("father name"));
+                    finished = askFinished();
+                    updated = true;
+                    break;
+                case 4:
+                    student.setEmail(getEmail());
+                    finished = askFinished();
+                    updated = true;
+                    break;
+                case 5:
+                    student.setPhoneNumber(getNumber());
+                    finished = askFinished();
+                    updated = true;
+                    break;
+            }
+        } while (!finished);
+        return true;
     }
 
-    private static void copyData(Student student, Student dummy) {
-        if (dummy != null) {
-            student.setName(dummy.getName());
-            student.setSurname(dummy.getSurname());
-            student.setFatherName(dummy.getFatherName());
-            student.setEmail(dummy.getEmail());
-            student.setPhoneNumber(dummy.getPhoneNumber());
+    private static boolean askFinished() {
+        Pattern pattern = Pattern.compile("(?i)([yn]|(?i)(yes|no))");
+        do {
+            print("Do you want to continue editing? Yes/No: ");
+            String ans = scanner.next();
+            if (pattern.matcher(ans).matches()) {
+                return !ans.equalsIgnoreCase("yes");
+            } else if (ans.equals("-1")) {
+                throw new BackToMenu();
+            }
+            printError("Enter \"Yes\" or \"No\" to continue.");
+        } while (true);
+    }
+
+    private static String getName(String specification) {
+        while (true) {
+            print("Please enter " + specification + ": ");
+            String str = scanner.next();
+            if (str.equals("-1"))
+                throw new BackToMenu();
+            if (Student.checkName(str))
+                return str;
+            printError("Your input was incorrect! Please enter again. (Words should be Capitalized)");
+        }
+    }
+
+    private static String getNumber() {
+        while (true) {
+            print("Please enter number: ");
+            String str = scanner.next();
+            if (str.equals("-1"))
+                throw new BackToMenu();
+            if (Student.checkNumber(str))
+                return str;
+            printError("Your input was incorrect! Number format should be like this: +994YYXXXXXXX. Please enter again.");
+        }
+    }
+
+    private static String getEmail() {
+        while (true) {
+            print("Please enter email: ");
+            String str = scanner.next();
+            if (str.equals("-1"))
+                throw new BackToMenu();
+            if (Student.checkEmail(str))
+                return str;
+            printError("Your input was incorrect! Please enter again.");
         }
     }
 
@@ -204,40 +276,12 @@ public class Main {
     }
 
     private static Student getNewStudentFromUser() {
-        Student student = new Student();
-        do {
-            try {
-                print("Name: ");
-                String name = scanner.next();
-                if (checkExit(name))
-                    break;
-                student.setName(name);
-                print("Surname: ");
-                String surname = scanner.next();
-                if (checkExit(surname))
-                    break;
-                student.setSurname(surname);
-                print("Father name: ");
-                String father = scanner.next();
-                if (checkExit(father))
-                    break;
-                student.setFatherName(father);
-                print("Email: ");
-                String email = scanner.next();
-                if (checkExit(email))
-                    break;
-                student.setEmail(email);
-                print("Phone number: +994");
-                String phone = scanner.next();
-                if (checkExit(phone))
-                    break;
-                student.setPhoneNumber("+994" + phone);
-                return student;
-            } catch (Exception exception) {
-                printError(exception.getMessage());
-            }
-        } while (true);
-        return null;
+        String name = getName("name");
+        String surname = getName("last name");
+        String father = getName("father name");
+        String number = getNumber();
+        String email = getEmail();
+        return new Student(name, surname, father, email, number);
     }
 
     private static boolean checkExit(String str) {
@@ -252,7 +296,8 @@ public class Main {
 
     public static void readJSON() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        TypeReference<SortedMap<Long, Student>> reference = new TypeReference<>() {};
+        TypeReference<SortedMap<Long, Student>> reference = new TypeReference<>() {
+        };
         students = mapper.readValue(Path.of("data.json").toFile(), reference);
     }
 

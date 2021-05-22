@@ -21,7 +21,16 @@ public final class Printer {
                         
             \t0. Back.
             """ + Color.RESET.asString;
-
+    public static final String update =Color.BLUE.asString + """
+            \t\t UPDATE BY:
+            \t1. Name.
+            \t2. Last name.
+            \t3. Father name.
+            \t4. Email.
+            \t5. Phone number.""" + Color.YELLOW.asString + """
+                        
+            \t0. Back.
+            """ + Color.RESET.asString;
     public static final String selectStudent = Color.BLUE.asString + """
             \t1. Select all students.
             \t2. Select a student.""" + Color.YELLOW.asString + """

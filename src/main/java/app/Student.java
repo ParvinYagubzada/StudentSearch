@@ -57,8 +57,7 @@ public class Student implements Comparable<Student> {
     }
 
     public void setName(String name) {
-        Pattern pattern = Pattern.compile("^\\p{Upper}[a-z]{2,}");
-        if (pattern.matcher(name).matches()) {
+        if (checkName(name)) {
             this.name = name;
         } else {
             throw new InvalidParameterException("Name's first letter has to be Upper case letter and other letters have to be Lower case." +
@@ -71,12 +70,11 @@ public class Student implements Comparable<Student> {
     }
 
     public void setSurname(String surname) {
-        Pattern pattern = Pattern.compile("^\\p{Upper}[a-z]{2,}");
-        if (pattern.matcher(surname).matches()) {
+        if (checkName(surname)) {
             this.surname = surname;
         } else {
             throw new InvalidParameterException("Surname's first letter has to be Upper case letter and other letters have to be Lower case." +
-                    "\nIt can only have alphabetic characters. Min length is 5 characters.");
+                    "\nIt can only have alphabetic characters. Min length is 3 characters.");
         }
     }
 
@@ -85,8 +83,7 @@ public class Student implements Comparable<Student> {
     }
 
     public void setFatherName(String fatherName) {
-        Pattern pattern = Pattern.compile("^\\p{Upper}[a-z]{2,}");
-        if (pattern.matcher(fatherName).matches()) {
+        if (checkName(fatherName)) {
             this.fatherName = fatherName;
         } else {
             throw new InvalidParameterException("Father name's first letter has to be Upper case letter and other letters have to be Lower case." +
@@ -94,17 +91,26 @@ public class Student implements Comparable<Student> {
         }
     }
 
+    public static boolean checkName(String name) {
+        Pattern pattern = Pattern.compile("^\\p{Upper}[a-z]{2,}");
+        return pattern.matcher(name).matches();
+    }
+
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
-        Pattern pattern = Pattern.compile("^[\\p{Alnum}_.-]+@\\p{Alnum}+(\\.\\p{Alpha}{2,6}){1,4}$");
-        if (pattern.matcher(email).matches()) {
+        if (checkEmail(email)) {
             this.email = email;
         } else {
             throw new InvalidParameterException("Email format was invalid!");
         }
+    }
+
+    public static boolean checkEmail(String email) {
+        Pattern pattern = Pattern.compile("^[\\p{Alnum}_.-]+@\\p{Alnum}+(\\.\\p{Alpha}{2,6}){1,4}$");
+        return pattern.matcher(email).matches();
     }
 
     public String getPhoneNumber() {
@@ -112,14 +118,17 @@ public class Student implements Comparable<Student> {
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        Pattern pattern = Pattern.compile("^\\+994(50|51|55|70|77|99)[1-9]\\d{6}$");
-        if (pattern.matcher(phoneNumber).matches()) {
+        if (checkNumber(phoneNumber)) {
             this.phoneNumber = phoneNumber;
         } else {
             throw new InvalidParameterException("Phone number was incorrect. Format should be like +994XXXXXXXXX");
         }
     }
 
+    public static boolean checkNumber(String number) {
+        Pattern pattern = Pattern.compile("^\\+994(50|51|55|70|77|99)[1-9]\\d{6}$");
+        return pattern.matcher(number).matches();
+    }
 
     @Override
     public int compareTo(Student second) {
