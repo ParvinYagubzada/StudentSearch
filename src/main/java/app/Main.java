@@ -20,13 +20,16 @@ public class Main {
     static {
         students = new TreeMap<>();
     }
-
+    //Reads data from JSON.
+    //Sets next Student ID for insert operation.
+    //Starts application.
     public static void main(String[] args) throws IOException {
         readJSON();
         Generator.setID(101000);
         startApp();
     }
 
+    //Prints main menu. Asks for user selection. Application runs until user wants to exit. (Option 0)
     public static void startApp() throws IOException {
         int userInput = -1;
         while (userInput != 0) {
@@ -43,6 +46,8 @@ public class Main {
         }
     }
 
+    //Starts crud options. Prints crud menu asks user selection.
+    //IF any selection throw Exception (BackToMenu) this try-catch block catches it and returns main menu.
     public static void operationCRUD() {
         printMenu(crud);
         try {
@@ -51,12 +56,8 @@ public class Main {
                     break;
                 case 1:
                     Student newStudent = getNewStudentFromUser();
-                    if (newStudent != null) {
-                        println("Student " + colorString(Color.PURPLE, newStudent.getName()) + " added to DB!");
-                        students.put(newStudent.getId(), newStudent);
-                    } else {
-                        println(returningBack);
-                    }
+                    println("Student " + colorString(Color.PURPLE, newStudent.getName()) + " added to DB!");
+                    students.put(newStudent.getId(), newStudent);
                     break;
                 case 2:
                     printMenu(selectStudent);
@@ -84,11 +85,11 @@ public class Main {
                     deleteStudent(getId());
                     break;
             }
-        } catch (BackToMenu ignored) {
-        }
+        } catch (BackToMenu ignored) {}
         println(returningMainMenu);
     }
-
+    //Starts search options. Prints search menu asks user selection.
+    //IF any selection throw Exception (BackToMenu) this try-catch block catches it and returns main menu.
     public static void operationSearch() {
         print(searchOptions);
         try {
@@ -96,20 +97,26 @@ public class Main {
                 case 0, -1:
                     break;
                 case 1:
-                    search(getString("name"), Comparator.comparing(Student::getName), SearchType.NAME);
+                    search(getSearchString("name"), Comparator.comparing(Student::getName), SearchType.NAME);
                     break;
                 case 2:
-                    search(getString("surname"), Comparator.comparing(Student::getSurname), SearchType.SURNAME);
+                    search(getSearchString("surname"), Comparator.comparing(Student::getSurname), SearchType.SURNAME);
                     break;
                 case 3:
-                    search(getString("father name"), Comparator.comparing(Student::getFatherName), SearchType.FATHER);
+                    search(getSearchString("father name"), Comparator.comparing(Student::getFatherName), SearchType.FATHER);
                     break;
             }
-        } catch (BackToMenu ignored) {
-        }
+        } catch (BackToMenu ignored) {}
         println(returningMainMenu);
     }
 
+    /**
+     * Gets selections for switches.
+     * Continues until user inserts "-1" or valid selection.
+     *
+     * @param limit limits selection from 0 (inclusive) to limit (inclusive).
+     * @return integer selection which will be used in switches.
+     **/
     private static int getSelection(int limit) {
         int selection = Integer.MIN_VALUE;
         do {
@@ -128,7 +135,15 @@ public class Main {
         return selection;
     }
 
-    private static String getString(String name) throws IllegalArgumentException {
+    /**
+     * Gets name, last name or father name for searching.
+     * Continues until user inserts "-1" or valid name.
+     *
+     * @param name limits selection from 0 (inclusive) to limit (inclusive).
+     * @return string valid name, last name or father name.
+     * @throws BackToMenu if user inserts "-1" as input.
+     **/
+    private static String getSearchString(String name) throws IllegalArgumentException {
         Pattern pattern = Pattern.compile("^\\p{Upper}[a-z]*");
         String word = null;
         do {
@@ -143,6 +158,12 @@ public class Main {
         return word;
     }
 
+    /**
+     * Gets id for selecting, updating or deleting Student.
+     * Continues until user inserts "-1" or valid name.
+     *
+     * @return integer selection which will be used in switches.
+     **/
     private static long getId() {
         long id = 1;
         do {
@@ -161,6 +182,13 @@ public class Main {
         return id;
     }
 
+    /**
+     * Searches and finds Students which name, last name or father name starts with given string.
+     *
+     * @param search given string by user.
+     * @param comparator for inserting Students to tree.
+     * @param type search type which indicates how search operated on Students.
+     **/
     private static void search(String search, Comparator<Student> comparator, SearchType type) {
         Tree<Student> tree = new Tree<>(comparator);
         for (Student student : students.values())
@@ -168,6 +196,14 @@ public class Main {
         tree.search(search, type);
     }
 
+    /**
+     * Finds Student in Map based on his/her id.
+     * If Student does not exists in Map then returns null.
+     *
+     * @param id given Student id.
+     * @return Student if it is exist, null if it is not.
+     * @throws BackToMenu if user inserts "-1" for id.
+     **/
     private static Student getStudentById(long id) {
         if (students.containsKey(id)) {
             return students.get(id);
@@ -178,6 +214,15 @@ public class Main {
         throw new BackToMenu();
     }
 
+    /**
+     * Updates Student in Map.
+     * Continues until user selects exit (0) option.
+     * Or user selects -1 for returning main menu.
+     * Or until user inserts "no" after updating 1 field of Student object.
+     *
+     * @param student given string by user.
+     * @return boolean true if any field of Student object has been updated, false if update process fails.
+     **/
     private static boolean updateStudent(Student student) {
         boolean finished = true;
         boolean updated = false;
@@ -217,6 +262,14 @@ public class Main {
         return true;
     }
 
+    /**
+     * Asks user to insert "yes" or "no" inputs.
+     * This indicates that if user wants to continue editing or wants to stop and return main menu.
+     * Continues until user inserts "-1" or valid input.
+     *
+     * @return boolean true if any user inserts valid "yes", false if inserts valid "no".
+     * @throws BackToMenu if user inserts "-1" as input.
+     **/
     private static boolean askFinished() {
         Pattern pattern = Pattern.compile("(?i)([yn]|(?i)(yes|no))");
         do {
@@ -231,6 +284,14 @@ public class Main {
         } while (true);
     }
 
+    /**
+     * Gets name, last name or father name for updating or creating new user.
+     * Continues until user inserts "-1" or valid name.
+     *
+     * @param specification type of field that you want user to insert.
+     * @return string valid name, last name or father name.
+     * @throws BackToMenu if user inserts "-1" as input.
+     **/
     private static String getName(String specification) {
         while (true) {
             print("Please enter " + specification + ": ");
@@ -243,6 +304,13 @@ public class Main {
         }
     }
 
+    /**
+     * Gets Student phone number for updating or creating new user.
+     * Continues until user inserts "-1" or valid phone number.
+     *
+     * @return string valid phone number.
+     * @throws BackToMenu if user inserts "-1" as input.
+     **/
     private static String getNumber() {
         while (true) {
             print("Please enter number: ");
@@ -255,6 +323,13 @@ public class Main {
         }
     }
 
+    /**
+     * Gets Student email for updating or creating new user.
+     * Continues until user inserts "-1" or valid email.
+     *
+     * @return string valid email.
+     * @throws BackToMenu if user inserts "-1" as input.
+     **/
     private static String getEmail() {
         while (true) {
             print("Please enter email: ");
@@ -267,6 +342,11 @@ public class Main {
         }
     }
 
+    /**
+     * Removes Student if student exists.
+     *
+     * @param id type of field that you want user to insert.
+     **/
     private static void deleteStudent(long id) {
         Student student = getStudentById(id);
         if (student != null) {
@@ -275,6 +355,7 @@ public class Main {
         }
     }
 
+    //Asks new user data for creating new Student object.
     private static Student getNewStudentFromUser() {
         String name = getName("name");
         String surname = getName("last name");
@@ -284,23 +365,21 @@ public class Main {
         return new Student(name, surname, father, email, number);
     }
 
-    private static boolean checkExit(String str) {
-        return str.equals("-1");
-    }
-
+    //Writes data to JSON file.
     public static void writeJSON() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
         writer.writeValue(Path.of("data.json").toFile(), students);
     }
 
+    //Reads data from JSON file.
     public static void readJSON() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        TypeReference<SortedMap<Long, Student>> reference = new TypeReference<>() {
-        };
+        TypeReference<SortedMap<Long, Student>> reference = new TypeReference<>() {};
         students = mapper.readValue(Path.of("data.json").toFile(), reference);
     }
 
+    //Exception for escaping input fields to main menu.
     static class BackToMenu extends RuntimeException {
         public BackToMenu() {
             println(returningBack);
