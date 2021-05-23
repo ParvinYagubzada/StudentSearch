@@ -139,7 +139,7 @@ public class Main {
      * Gets name, last name or father name for searching.
      * Continues until user inserts "-1" or valid name.
      *
-     * @param name limits selection from 0 (inclusive) to limit (inclusive).
+     * @param name searched word which inserted by user.
      * @return string valid name, last name or father name.
      * @throws BackToMenu if user inserts "-1" as input.
      **/
@@ -161,7 +161,7 @@ public class Main {
      * Gets id for selecting, updating or deleting Student.
      * Continues until user inserts "-1" or valid name.
      *
-     * @return integer selection which will be used in switches.
+     * @return long id which indicates the Student in Map.
      **/
     private static long getId() {
         long id = 1;
