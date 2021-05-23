@@ -144,18 +144,17 @@ public class Main {
      * @throws BackToMenu if user inserts "-1" as input.
      **/
     private static String getSearchString(String name) throws IllegalArgumentException {
-        Pattern pattern = Pattern.compile("^\\p{Upper}[a-z]*");
+        Pattern pattern = Pattern.compile("[A-Za-z]+");
         String word = null;
         do {
             if (word != null)
-                printError("Search word's first letter has to be Upper case character and others needs to be Lower case!" +
-                        " It can have min 1 character. Example: Parvin");
+                printError("Search word can only have alphabetic characters. Min length is 1 character.");
             print("Please enter the " + colorString(Color.PURPLE, name) + " that you want to search: ");
             word = scanner.next();
             if (word.equals("-1"))
                 throw new BackToMenu();
         } while (!pattern.matcher(word).matches());
-        return word;
+        return toCapitalize(word);
     }
 
     /**
